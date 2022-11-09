@@ -1,24 +1,35 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func setRouter() *gin.Engine {
 	// Creates default gin router with Logger and Recovery middleware already attached
 	router := gin.Default()
 
+	router.Use(static.Serve("/", static.LocalFile("./public/dist", true)))
+
 	// Create API route group
 	api := router.Group("/api")
+
 	{
-		// Add /hello GET route to router and define route handler function
-		api.GET("/hello", func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{"msg": "world"})
+		api.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "pong",
+			})
 		})
 	}
 
-	router.NoRoute(func(ctx *gin.Context) { ctx.JSON(http.StatusNotFound, gin.H{}) })
-
 	return router
+}
+
+func Start() {
+	router := setRouter()
+
+	// Start listening and serving requests
+	router.Run(":5000")
 }

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"bavovna/internal/controllers"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func setRouter() *gin.Engine {
@@ -17,7 +17,12 @@ func setRouter() *gin.Engine {
 
 	api := router.Group("/api")
 
-	api.POST("/register", controllers.Register)
+	{
+		api.POST("/signin", signIn)
+		api.POST("/signup", signUp)
+	}
+
+	router.NoRoute(func(ctx *gin.Context) { ctx.JSON(http.StatusNotFound, gin.H{}) })
 
 	return router
 }

@@ -2,6 +2,7 @@ package store
 
 import (
 	"crypto/rand"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -56,4 +57,15 @@ func GenerateSalt() ([]byte, error) {
 		return nil, err
 	}
 	return salt, nil
+}
+
+func FetchUser(id int) (*User, error) {
+	user := new(User)
+	user.ID = id
+	err := db.Model(user).Returning("*").WherePK().Select()
+	if err != nil {
+		log.Error().Err(err).Msg("Error fetching user")
+		return nil, err
+	}
+	return user, nil
 }
